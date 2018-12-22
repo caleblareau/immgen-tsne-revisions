@@ -68,10 +68,10 @@ peaks <- makeGRangesFromDataFrame(peaksd, seqnames.field = "V1", start.field = "
 library(BSgenome.Mmusculus.UCSC.mm10)
 ctcf <- matchMotifs(mouse_pwms_v2["ENSMUSG00000005698_LINE295_Ctcf_D"], peaks, BSgenome.Mmusculus.UCSC.mm10, p.cutoff = 1e-05)
 
-
+load("../data/tSNE_peaks.rda")
 pal <- "brewer_spectra"
-plotdf.b <- data.frame(tSNE1 = tsne_peaks$Y[,1], tSNE2 = tsne_peaks$Y[,2], Gini = (vec),
-                       CTCF = 1:dim(tsne_peaks$Y)[1] %in% (which(SummarizedExperiment::assays(ctcf)[["motifMatches"]][,1])))
+plotdf.b <- data.frame(tSNE1 = tsne_peaks$Y[,1], tSNE2 = tsne_peaks$Y[,2], Gini = (vec))
+                       #CTCF = 1:dim(tsne_peaks$Y)[1] %in% (which(SummarizedExperiment::assays(ctcf)[["motifMatches"]][,1])))
 
 p1 <- ggplot(plotdf.b[order(abs(plotdf.b$Gini - 0.5)),], aes(tSNE1, tSNE2, color = Gini)) +
   scale_color_gradientn(colors = jdb_palette(pal)) + geom_point(size = 0.1, alpha = 0.3) +
@@ -84,6 +84,11 @@ p1 <- ggplot(plotdf.b[order(abs(plotdf.b$Gini - 0.5)),], aes(tSNE1, tSNE2, color
         panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
         panel.grid.minor=element_blank(),plot.background=element_blank())
 cowplot::ggsave(p1, file = paste0("../plots/","GINI",".png"), width = 10, height = 8, units = "in", dpi = 300)
+cowplot::ggsave(p1, file = paste0("../plots/","GINI",".tiff"), width = 9.5, height = 11.5, units = "in", dpi = 300)
+
+cowplot::ggsave(p1, file = paste0("../plots/","GINI","."), width = 9.5, height = 11.5, units = "in", dpi = 300)
+
+
 
 p1 <- ggplot(plotdf.b %>% arrange(CTCF), aes(tSNE1, tSNE2, color = CTCF)) + geom_point(size = 0.1, alpha = 0.1) +
   scale_color_manual(values = c("black", "dodgerblue")) + pretty_plot() +
